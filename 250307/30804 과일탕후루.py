@@ -1,18 +1,23 @@
-from collections import Counter
+from collections import defaultdict as d
+
 _ = input()
-last = 0
-fruits = []
+fruits = list(map(int, input().split()))
 
-for fruit in map(int, input().split(' ')):
-    if last != fruit:
-        last = fruit
-        fruits += [1]
-    else:
-        fruits[-1] += 1
+st, ed, r = 0,0,0
+counter = d(int)
+count = 0
 
-if len(fruits) == 1 : print(len(fruits))
-else:
-    r = 0
-    for i in range(len(fruits) - 1):
-        r = max(r, fruits[i] + fruits[i+1])
-    print(r)
+while len(fruits) > ed:
+
+    if counter[fruits[ed]] == 0 : count+=1
+    counter[fruits[ed]] += 1
+
+    while count > 2 :
+        counter[fruits[st]] -= 1
+        if counter[fruits[st]] == 0 : count -= 1
+        st += 1
+    
+    r = max(r, ed - st + 1)
+    ed += 1
+    
+print(r)
