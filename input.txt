@@ -1,4 +1,2 @@
-How are you today?
-Quite well, thank you, how about yourself?
-I live at number twenty four.
-#
+4
+1 5 888 18518
