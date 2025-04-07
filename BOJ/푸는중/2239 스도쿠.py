@@ -2,58 +2,73 @@ from sys import stdin
 stdin = open('input.txt')
 input = lambda : stdin.readline().rstrip()
 
-sudoku = [list(map(int, list(input()))) for _ in range(9)]
+initial = []
+sudoku = []
+empty = []
+
+def init():
+    global sudoku, empty, initial
+    sudoku = [list(map(int, list(input()))) for _ in range(9)]
+    from copy import deepcopy
+    initial = deepcopy(sudoku)
+    for i in range(9):
+        for j in range(9):
+            if sudoku[i][j] == 0 : empty.append([(i, j), nums(i,j)])
+
+    print(*empty, sep='\n')
+
+def check(r, c):
+    pos = set()
+    for i in range(9):
+        pos.add((r, i))
+        pos.add((i, c))
+        pos.add((r - r%3 + i//3, c - c%3 + i%3))
+    return pos
 
 def nums(r, c):
-    if sudoku[r][c] > 0 : return set()
-    pn = {i for i in range(1, 10)}
-    for i in range(9):
-        if sudoku[r][i] > 0 : pn.discard(sudoku[r][i])
-        if sudoku[i][c] > 0 : pn.discard(sudoku[i][c])
-    rs = r - r%3
-    cs = c - c%3
-    for i in range(rs, rs + 3):
-        for j in range(cs, cs + 3):
-            if sudoku[i][j] > 0 : pn.discard(sudoku[i][j])
+    n = {i for i in range(10)}
+    for x, y in check(r, c): n.discard(sudoku[x][y])
+    return n
 
-    return pn
-
-p = [[nums(r, c) for c in range(9)] for r in range(9)]
-
-def fill(r, c):
-    if len(p[r][c]) != 1 : return
-    n = p[r][c].pop()
+def fill(i):
+    pos, nums = empty[i]
+    r, c = pos
+    n = min(nums)
+    empty.pop(i)
     sudoku[r][c] = n
+    dup = check(r, c)
+    for x in range(len(empty)):
+        if empty[x][0] in dup: empty[x][1].discard(n)
+
+def try_fill():
+    for i in range(len(empty)):
+        if len(empty[i][1]) == 1:
+            fill(i)
+            return
+        
+    for i in range(len(empty)):
+        if len(empty[i][1]) > 1:
+            fill(i)
+            return
+
+def main():
+    init()
+    while empty: try_fill()
     for i in range(9):
-        p[r][i].discard(n)
-        fill(r, i)
-        p[i][c].discard(n)
-        fill(i, c)
-    rs = r - r%3
-    cs = c - c%3
-    for i in range(rs, rs + 3):
-        for j in range(cs, cs + 3):
-            p[i][j].discard(n)
-            fill(i, j)
+        print(initial[i], sudoku[i])
+    print(*empty,sep='\n')
 
-for r in range(9):
-    for c in range(9):
-        fill(r, c)
-
-while 1:
-    a = False
-    for r in range(9):
-        for c in range(9):
-            if len(p[r][c]) > 1 :
-                p[r][c] = {min(p[r][c])}
-                fill(r, c)
-                a = True
-                break
-        else : continue
-        break
-    if not a : break
-            
+if __name__ == '__main__':
+    main()
 
 
-for i in range(9):
-    print(*sudoku[i], sep='')
+
+# 365492718
+# 849761235
+# 127358964
+# 712984351
+# 451637892
+# 983215476
+# 574819623
+# 234176589
+# 698543137
