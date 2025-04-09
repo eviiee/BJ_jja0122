@@ -1,3 +1,6 @@
 N = int(input())
+nums = list(map(int, input().split()))
 from math import lcm
-print(lcm(*map(int, input().split())))
+x = lcm(*nums)
+if x == max(nums) : x *= min(nums)
+print(x)
